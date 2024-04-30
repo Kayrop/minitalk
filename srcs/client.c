@@ -6,7 +6,7 @@
 /*   By: adahmani <adahmani@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/02/03 02:45:20 by kayrop            #+#    #+#             */
-/*   Updated: 2024/04/03 15:17:25 by adahmani         ###   ########.fr       */
+/*   Updated: 2024/04/30 18:17:36 by adahmani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	sig_handler(int signum)
 	}
 }
 
-void	config_signals(void)
+int	config_signals(void)
 {
 	struct sigaction	new_sig;
 
@@ -84,15 +84,23 @@ void	config_signals(void)
 	new_sig.sa_flags = 0;
 	sigemptyset(&new_sig.sa_mask);
 	if (sigaction(SIGUSR1, &new_sig, NULL) == -1)
+	{
 		ft_printf("Failed to change SIGUSR1's behavior");
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
 }
 
 int	main(int argc, char **argv)
 {
+	int	err_config;
+
 	ft_printf("CLIENT PID = %d\n\n", getpid());
 	if (!args_check(argc, argv))
-		return (-1);
-	config_signals();
+		return (EXIT_FAILURE);
+	err_config = config_signals();
+	if (err_config == EXIT_FAILURE)
+		return (EXIT_FAILURE);
 	send_msg(ft_atoi(argv[1]), argv[2]);
 	return (EXIT_SUCCESS);
 }
