@@ -6,7 +6,7 @@
 /*   By: adahmani <adahmani@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/03/27 22:06:57 by adahmani          #+#    #+#             */
-/*   Updated: 2024/03/27 22:22:42 by adahmani         ###   ########.fr       */
+/*   Updated: 2024/04/30 18:11:07 by adahmani         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	handle_sigusr(int signum, siginfo_t *info, void *ucontext)
 	}
 }
 
-void	config_signals(void)
+int	config_signals(void)
 {
 	struct sigaction	sa;
 
@@ -41,17 +41,28 @@ void	config_signals(void)
 	sa.sa_flags = SA_SIGINFO;
 	sigemptyset(&sa.sa_mask);
 	if (sigaction(SIGUSR1, &sa, NULL) == -1)
+	{
 		ft_printf("Failed to change SIGUSR1's behavior");
+		return (EXIT_FAILURE);
+	}
 	if (sigaction(SIGUSR2, &sa, NULL) == -1)
+	{
 		ft_printf("Failed to change SIGUSR2's behavior");
+		return (EXIT_FAILURE);
+	}
+	return (EXIT_SUCCESS);
 }
 
 int	main(int argc, char **argv)
 {
+	int	err_config;
+
 	(void)argc;
 	(void)argv;
 	ft_printf("SERVER PID = %d\n\n", getpid());
-	config_signals();
+	err_config = config_signals();
+	if (err_config == 1)
+		return (EXIT_FAILURE);
 	while (1)
 		pause();
 	return (EXIT_SUCCESS);
